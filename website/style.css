@@ -8,7 +8,7 @@
     --radius-lg: 24px;
     --radius-md: 16px;
     --radius-sm: 12px;
-    --font-sans: 'Sarasa Fixed SC', 'Sarasa Fixed TC', 'Sarasa Fixed CL', 'Sarasa Term SC', 'Sarasa Mono SC', 'Courier New', Courier, monospace;
+    --font-sans: 'JetBrains Mono', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Source Han Sans SC', 'Noto Sans CJK SC', monospace;
 }
 
 * {
