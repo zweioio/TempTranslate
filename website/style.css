@@ -338,6 +338,14 @@ body {
     width: 100%;
     margin: 0 auto;
     backdrop-filter: blur(8px);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.install-card:hover {
+    transform: translateY(-8px);
+    background: rgba(240, 247, 255, 0.9);
+    border-color: #BFDBFE;
+    box-shadow: 0 20px 40px rgba(3, 149, 255, 0.08);
 }
 
 .install-card h2 {
