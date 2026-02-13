@@ -39,13 +39,12 @@ body {
 
 /* Background Decoration */
 .bg-decoration {
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
     width: 100%;
-    height: 100%;
+    height: 100vh;
     z-index: -1;
-    background-color: var(--bg-page);
     overflow: hidden;
     pointer-events: none;
 }
@@ -53,57 +52,59 @@ body {
 .glow-orb {
     position: absolute;
     border-radius: 50%;
-    filter: blur(120px);
-    opacity: 0.8;
-    animation: float 20s infinite alternate ease-in-out;
-    will-change: transform, opacity;
+    filter: blur(100px);
+    opacity: 0.6;
+    animation: float 15s infinite alternate ease-in-out, colorShift 20s infinite alternate linear;
+    will-change: transform, opacity, background;
 }
 
 .orb-1 {
-    width: 800px;
-    height: 800px;
-    background: radial-gradient(circle, rgba(0, 102, 255, 0.3) 0%, rgba(0, 102, 255, 0.1) 40%, transparent 70%);
-    top: -300px;
-    left: -200px;
-    animation-duration: 18s;
+    width: 700px;
+    height: 700px;
+    background: radial-gradient(circle, rgba(0, 102, 255, 0.4) 0%, transparent 70%);
+    top: -200px;
+    left: -150px;
 }
 
 .orb-2 {
-    width: 1000px;
-    height: 1000px;
-    background: radial-gradient(circle, rgba(0, 163, 255, 0.25) 0%, rgba(0, 102, 255, 0.1) 40%, transparent 70%);
-    bottom: -400px;
-    right: -300px;
-    animation-duration: 25s;
-    animation-delay: -4s;
+    width: 800px;
+    height: 800px;
+    background: radial-gradient(circle, rgba(255, 0, 150, 0.3) 0%, transparent 70%);
+    top: -100px;
+    right: -200px;
+    animation-delay: -5s;
 }
 
 .orb-3 {
-    width: 600px;
-    height: 600px;
-    background: radial-gradient(circle, rgba(0, 102, 255, 0.2) 0%, rgba(0, 212, 255, 0.1) 40%, transparent 70%);
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(150, 0, 255, 0.3) 0%, transparent 70%);
     top: 20%;
-    left: 40%;
-    animation-duration: 15s;
-    animation-delay: -8s;
+    left: 30%;
+    animation-delay: -10s;
 }
 
 @keyframes float {
     0% {
         transform: translate(0, 0) scale(1) rotate(0deg);
-        opacity: 0.6;
     }
-    33% {
-        transform: translate(100px, 150px) scale(1.2) rotate(120deg);
-        opacity: 0.9;
-    }
-    66% {
-        transform: translate(-50px, 80px) scale(0.8) rotate(240deg);
-        opacity: 0.7;
+    50% {
+        transform: translate(60px, 80px) scale(1.1) rotate(45deg);
     }
     100% {
-        transform: translate(0, 0) scale(1) rotate(360deg);
-        opacity: 0.6;
+        transform: translate(-40px, 40px) scale(0.9) rotate(-45deg);
+    }
+}
+
+@keyframes colorShift {
+    0% {
+        filter: blur(100px) hue-rotate(0deg);
+    }
+    50% {
+        filter: blur(120px) hue-rotate(90deg);
+    }
+    100% {
+        filter: blur(100px) hue-rotate(180deg);
     }
 }
 
