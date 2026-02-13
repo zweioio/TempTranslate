@@ -27,16 +27,14 @@
 
 ## 部署说明
 
-本项目配置了 GitHub Actions 自动部署。当你将代码推送到 GitHub 的 `main` 分支时，`website/` 目录下的内容会自动发布到 GitHub Pages。
+本项目推荐使用 **Vercel** 进行快速部署。
 
 **部署步骤：**
-1. 在 GitHub 上创建一个名为 `TempTranslate` 的新仓库。
-2. 在本地终端运行：
-   ```bash
-   git remote add origin https://github.com/你的用户名/TempTranslate.git
-   git push -u origin main
-   ```
-3. 访问仓库设置 `Settings -> Pages`，将 `Build and deployment -> Source` 设置为 `GitHub Actions`。
+1. 在 GitHub 上创建一个名为 `TempTranslate` 的新仓库并推送代码。
+2. 登录 [Vercel 官网](https://vercel.com/)，点击 **Add New -> Project**。
+3. 导入你的 GitHub 仓库。
+4. **关键配置**：在 "Framework Preset" 保持为 `Other`，在 **"Root Directory"** 处点击 "Edit" 并选择 **`website`** 文件夹。
+5. 点击 **Deploy**。
 
 ---
 © 2026 临时翻译. 开源且安全。
