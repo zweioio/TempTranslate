@@ -234,6 +234,35 @@ function setInputAndTranslate(text) {
   performTranslation();
 }
 
+function detectLang(text) {
+  const zhCount = (text.match(/[\u4e00-\u9fff]/g) || []).length;
+  const enCount = (text.match(/[A-Za-z]/g) || []).length;
+  if (zhCount === 0 && enCount === 0) return null;
+  return zhCount >= enCount ? 'zh' : 'en';
+}
+
+function maybeAdjustLangByInput(text) {
+  const detected = detectLang(text);
+  if (!detected) return;
+  if (detected === 'zh') {
+    if (els.fromLang.value !== 'zh' || els.toLang.value === 'zh') {
+      els.fromLang.value = 'zh';
+      els.toLang.value = 'en';
+      state.fromLang = 'zh';
+      state.toLang = 'en';
+      chrome.storage.local.set({ fromLang: state.fromLang, toLang: state.toLang });
+    }
+  } else if (detected === 'en') {
+    if (els.fromLang.value !== 'en' || els.toLang.value === 'en') {
+      els.fromLang.value = 'en';
+      els.toLang.value = 'zh';
+      state.fromLang = 'en';
+      state.toLang = 'zh';
+      chrome.storage.local.set({ fromLang: state.fromLang, toLang: state.toLang });
+    }
+  }
+}
+
 // 去掉与背景/面板的主动消息联动监听
 
 async function getHistory() {
@@ -257,28 +286,32 @@ function renderHistoryItem(item) {
   const wrap = document.createElement('div');
   wrap.style.display = 'flex';
   wrap.style.flexDirection = 'column';
-  wrap.style.gap = '6px';
+  wrap.style.gap = '4px';
   wrap.style.background = '#ffffff';
   wrap.style.borderRadius = '12px';
-  wrap.style.padding = '16px';
-  wrap.style.border = '1px solid #F4F6F7';
+  wrap.style.padding = '12px';
+  wrap.style.border = '1px solid #E9EAEB';
   const src = document.createElement('div');
-  src.style.color = '#1d1d1f';
-  src.style.fontSize = '12px';
-  src.style.lineHeight = '1.4';
+  src.style.color = '#60656B';
+  src.style.fontSize = '14px';
+  src.style.lineHeight = 'normal';
   src.style.fontWeight = '400';
   src.style.whiteSpace = 'pre-wrap';
   src.style.wordBreak = 'break-word';
   src.innerText = item.src;
+  const divider = document.createElement('div');
+  divider.style.borderTop = '1px dashed #E9EAEB';
+  divider.style.margin = '4px 0';
   const out = document.createElement('div');
-  out.style.color = '#6b7280';
-  out.style.fontSize = '12px';
-  out.style.lineHeight = '1.4';
+  out.style.color = '#919499';
+  out.style.fontSize = '14px';
+  out.style.lineHeight = 'normal';
   out.style.fontWeight = '400';
   out.style.whiteSpace = 'pre-wrap';
   out.style.wordBreak = 'break-word';
   out.innerText = item.out;
   wrap.appendChild(src);
+  wrap.appendChild(divider);
   wrap.appendChild(out);
   return wrap;
 }
@@ -321,6 +354,8 @@ document.addEventListener('DOMContentLoaded', () => {
 async function performTranslation() {
   const currentText = els.inputText.value.trim();
   if (!currentText || state.isTranslating) return;
+
+  maybeAdjustLangByInput(currentText);
 
   state.isTranslating = true;
   els.translateBtn.disabled = true;
@@ -365,7 +400,10 @@ async function performTranslation() {
   } catch (err) {
     // 只有在输入框仍有内容时才显示错误
     if (els.inputText.value.trim()) {
-      els.outputText.innerText = '翻译失败: ' + err.message;
+      els.outputText.innerText = '翻译失败，请切换翻译引擎或检查网络';
+      els.outputText.style.color = '#F53F3F';
+      els.backTranslation.classList.add('hidden');
+      els.outputActions.classList.add('hidden');
     }
   } finally {
     state.isTranslating = false;

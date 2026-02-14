@@ -138,8 +138,8 @@ body {
 }
 
 .logo img {
-    width: 200px;
-    height: 48px;
+    height: 32px;
+    width: auto;
     border-radius: 0;
     display: block;
     object-fit: contain;
@@ -362,12 +362,23 @@ body {
     border: 1px solid var(--border);
     display: flex;
     flex-direction: column;
+    transition: all 0.3s;
+}
+
+.pricing-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-hover);
 }
 
 .pricing-card.featured {
     border: 2px solid var(--primary);
     position: relative;
     box-shadow: 0 10px 30px -10px rgba(0, 102, 255, 0.15);
+}
+
+.pricing-card.featured:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px -10px rgba(0, 102, 255, 0.25);
 }
 
 .pricing-card.featured::after {
@@ -507,8 +518,8 @@ body {
 }
 
 .footer-logo img {
-    width: 28px;
-    height: 28px;
+    height: 24px;
+    width: auto;
 }
 
 .footer p {

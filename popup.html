@@ -50,7 +50,7 @@
     .brand img {
       width: 24px;
       height: 24px;
-      border-radius: 4px;
+      border-radius: 0;
     }
 
     .engine-selector {
@@ -124,7 +124,7 @@
     .input-container {
       background: var(--bg-light);
       border-radius: var(--border-radius);
-      padding: 16px;
+      padding: 12px;
       margin-bottom: 12px;
       position: relative;
     }
@@ -163,6 +163,7 @@
       color: var(--text-dark);
       padding: 0;
       overflow-y: hidden;
+      font-family: inherit;
     }
 
     .input-footer {
@@ -225,7 +226,7 @@
     /* Output Area */
     .output-title {
       font-size: 14px;
-      color: #6b7280;
+      color: var(--text-dark);
       margin-top: 16px;
       margin-bottom: 8px;
     }
@@ -233,7 +234,7 @@
     .output-container {
       background: var(--bg-light);
       border-radius: var(--border-radius);
-      padding: 16px;
+      padding: 12px;
       min-height: 120px;
       position: relative;
     }
@@ -243,6 +244,7 @@
       line-height: 1.5;
       margin-bottom: 8px;
       color: var(--text-gray);
+      font-family: inherit;
     }
 
     .back-translation {
@@ -332,6 +334,8 @@
     }
 
     /* Dropdown simple styling */
+    #clearHistory { color: #6b7280; }
+    #clearHistory:hover { color: #0395FF; }
     select {
       appearance: none;
       background: transparent;
@@ -391,7 +395,7 @@
 
   <!-- Input Area -->
   <div class="input-container">
-    <div class="input-placeholder-layer" id="placeholderLayer" style="position: absolute; top: 16px; left: 16px; color: var(--text-gray); font-size: 16px; line-height: 1.4; pointer-events: none; display: flex; align-items: center; gap: 4px;">
+    <div class="input-placeholder-layer" id="placeholderLayer" style="position: absolute; top: 12px; left: 12px; color: var(--text-gray); font-size: 16px; line-height: 1.4; pointer-events: none; display: flex; align-items: center; gap: 4px;">
       输入或 <span id="pasteBtnReal" style="pointer-events: auto; display: inline-block; color: var(--primary-blue); cursor: pointer;">点击粘贴</span> 需要翻译的文本
     </div>
     <textarea id="inputText"></textarea>
@@ -424,11 +428,11 @@
   </div>
   
   <div id="historyHeader" style="display:flex;align-items:center;justify-content:space-between;margin-top:20px;padding:0 2px;">
-    <div id="historyLeft" style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+    <div id="historyLeft" style="display:flex;align-items:center;cursor:pointer;color:var(--text-dark);">
       <div class="output-title" style="margin:0;">历史记录</div>
-      <svg id="historyToggleIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+      <svg id="historyToggleIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-left:4px;color:inherit;"><path d="m6 9 6 6 6-6"/></svg>
     </div>
-    <button id="clearHistory" style="background:none;border:none;color:#6b7280;font-size:14px;line-height:1;cursor:pointer;padding:0;">清空历史</button>
+    <button id="clearHistory" style="background:none;border:none;font-size:14px;line-height:1;cursor:pointer;padding:0;">清空历史</button>
   </div>
   <div id="historyContainer" style="display:none;margin-top:8px;">
     <div id="historyList" style="display:flex;flex-direction:column;gap:12px;"></div>
