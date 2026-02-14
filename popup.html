@@ -423,12 +423,17 @@
     </div>
   </div>
   
-  <div class="output-title" style="margin-top:20px;">历史记录</div>
-  <div class="output-container" id="historyContainer">
-    <div id="historyList" style="display:flex;flex-direction:column;gap:10px;"></div>
-    <div style="display:flex;justify-content:flex-end;margin-top:12px;">
-      <button class="clear-btn" id="clearHistory">清空历史</button>
+  <div class="output-container" style="margin-top:20px;padding:12px;">
+    <div id="historyHeader" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+      <div class="output-title" style="margin:0;">历史记录</div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <button class="clear-btn" id="clearHistory">清空历史</button>
+        <svg id="historyToggleIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+      </div>
     </div>
+  </div>
+  <div class="output-container" id="historyContainer" style="display:none;">
+    <div id="historyList" style="display:flex;flex-direction:column;gap:10px;"></div>
   </div>
 
   <script src="popup.js"></script>

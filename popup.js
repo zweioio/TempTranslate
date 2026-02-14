@@ -247,7 +247,7 @@ async function getHistory() {
 async function addHistory(item) {
   const list = await getHistory();
   list.unshift(item);
-  const trimmed = list.slice(0, 50);
+  const trimmed = list.slice(0, 20);
   return new Promise((resolve) => {
     chrome.storage.local.set({ history: trimmed }, () => resolve());
   });
@@ -257,7 +257,10 @@ function renderHistoryItem(item) {
   const wrap = document.createElement('div');
   wrap.style.display = 'flex';
   wrap.style.flexDirection = 'column';
-  wrap.style.gap = '4px';
+  wrap.style.gap = '6px';
+  wrap.style.background = '#f4f7f9';
+  wrap.style.borderRadius = '12px';
+  wrap.style.padding = '12px';
   const src = document.createElement('div');
   src.style.color = '#6b7280';
   src.style.fontSize = '13px';
@@ -284,6 +287,17 @@ document.addEventListener('DOMContentLoaded', () => {
   if (clearHistory) {
     clearHistory.addEventListener('click', () => {
       chrome.storage.local.set({ history: [] }, () => renderHistory());
+    });
+  }
+  const historyHeader = document.getElementById('historyHeader');
+  const historyContainer = document.getElementById('historyContainer');
+  const toggleIcon = document.getElementById('historyToggleIcon');
+  let collapsed = true;
+  if (historyHeader && historyContainer && toggleIcon) {
+    historyHeader.addEventListener('click', () => {
+      collapsed = !collapsed;
+      historyContainer.style.display = collapsed ? 'none' : 'block';
+      toggleIcon.style.transform = collapsed ? 'rotate(0deg)' : 'rotate(180deg)';
     });
   }
   renderHistory();
