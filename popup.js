@@ -39,6 +39,21 @@ chrome.storage.sync.get(['engine'], (result) => {
   updateEngineUI();
 });
 
+// 双语对照开关
+const dualToggle = document.getElementById('dualToggle');
+const dualLabel = document.getElementById('dualToggleLabel');
+chrome.storage.sync.get(['dualEnabled'], (r) => {
+  const on = !!r.dualEnabled;
+  if (dualToggle) dualToggle.checked = on;
+  if (dualLabel) dualLabel.textContent = on ? '开启' : '关闭';
+});
+dualToggle && dualToggle.addEventListener('change', (e) => {
+  const on = e.target.checked;
+  chrome.storage.sync.set({ dualEnabled: on }, () => {
+    if (dualLabel) dualLabel.textContent = on ? '开启' : '关闭';
+  });
+});
+
 function updateEngineUI() {
   engineTags.forEach(tag => {
     if (tag.dataset.engine === state.currentEngine) {
