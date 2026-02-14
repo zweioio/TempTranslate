@@ -142,20 +142,7 @@ function attachEvents() {
     try {
       const text = await navigator.clipboard.readText();
       if (text) {
-        els.inputText.value = text;
-        els.clearInput.classList.remove('hidden');
-        els.placeholderLayer.style.display = 'none';
-        els.translateBtn.disabled = false;
-        
-        // 手动触发一次高度调整
-        els.inputText.style.height = '48px';
-        const scrollHeight = els.inputText.scrollHeight;
-        els.inputText.style.height = Math.min(Math.max(scrollHeight, 48), 240) + 'px';
-        els.inputText.style.overflowY = scrollHeight > 240 ? 'auto' : 'hidden';
-
-        els.inputText.focus();
-        // 粘贴后自动触发翻译
-        performTranslation();
+        setInputAndTranslate(text);
       }
     } catch (err) {
       console.error('Failed to read clipboard:', err);
@@ -234,6 +221,79 @@ function attachEvents() {
   });
 }
 
+function setInputAndTranslate(text) {
+  els.inputText.value = text;
+  els.clearInput.classList.remove('hidden');
+  els.placeholderLayer.style.display = 'none';
+  els.translateBtn.disabled = false;
+  els.inputText.style.height = '48px';
+  const scrollHeight = els.inputText.scrollHeight;
+  els.inputText.style.height = Math.min(Math.max(scrollHeight, 48), 240) + 'px';
+  els.inputText.style.overflowY = scrollHeight > 240 ? 'auto' : 'hidden';
+  els.inputText.focus();
+  performTranslation();
+}
+
+chrome.runtime.onMessage.addListener((message) => {
+  if (message && message.type === 'translateText' && message.text) {
+    setInputAndTranslate(message.text);
+  } else if (message && message.type === 'focusInput') {
+    els.inputText.focus();
+  }
+});
+
+async function getHistory() {
+  return new Promise((resolve) => {
+    chrome.storage.local.get(['history'], (r) => {
+      resolve(Array.isArray(r.history) ? r.history : []);
+    });
+  });
+}
+
+async function addHistory(item) {
+  const list = await getHistory();
+  list.unshift(item);
+  const trimmed = list.slice(0, 50);
+  return new Promise((resolve) => {
+    chrome.storage.local.set({ history: trimmed }, () => resolve());
+  });
+}
+
+function renderHistoryItem(item) {
+  const wrap = document.createElement('div');
+  wrap.style.display = 'flex';
+  wrap.style.flexDirection = 'column';
+  wrap.style.gap = '4px';
+  const src = document.createElement('div');
+  src.style.color = '#6b7280';
+  src.style.fontSize = '13px';
+  src.innerText = item.src;
+  const out = document.createElement('div');
+  out.style.color = '#1d1d1f';
+  out.style.fontSize = '15px';
+  out.innerText = item.out;
+  wrap.appendChild(src);
+  wrap.appendChild(out);
+  return wrap;
+}
+
+async function renderHistory() {
+  const list = await getHistory();
+  const container = document.getElementById('historyList');
+  if (!container) return;
+  container.innerHTML = '';
+  list.forEach((i) => container.appendChild(renderHistoryItem(i)));
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const clearHistory = document.getElementById('clearHistory');
+  if (clearHistory) {
+    clearHistory.addEventListener('click', () => {
+      chrome.storage.local.set({ history: [] }, () => renderHistory());
+    });
+  }
+  renderHistory();
+});
 // 执行翻译核心逻辑
 async function performTranslation() {
   const currentText = els.inputText.value.trim();
@@ -271,6 +331,14 @@ async function performTranslation() {
     els.backTranslation.innerText = backResult;
     els.backTranslation.classList.remove('hidden');
 
+    await addHistory({
+      t: Date.now(),
+      from: els.fromLang.value,
+      to: els.toLang.value,
+      src: currentText,
+      out: mainResult
+    });
+    renderHistory();
   } catch (err) {
     // 只有在输入框仍有内容时才显示错误
     if (els.inputText.value.trim()) {
