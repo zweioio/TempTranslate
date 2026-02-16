@@ -81,12 +81,34 @@
       color: var(--text-dark);
     }
 
+    /* Mode Segment buttons */
+    #modeSegment .seg {
+      padding: 0 12px;
+      height: 36px;
+      line-height: 36px;
+      border-radius: 8px;
+      font-size: 14px;
+      color: #6b7280;
+      cursor: pointer;
+      flex: 1;
+      text-align: center;
+      transition: all 0.2s ease;
+    }
+    #modeSegment .seg.active {
+      background: #fff;
+      color: var(--primary-blue);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    #modeSegment .seg:hover:not(.active) {
+      color: var(--text-dark) !important;
+    }
+
     /* Lang Selector */
     .lang-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 12px;
+      margin-bottom: 16px;
       gap: 12px;
     }
 
@@ -97,11 +119,14 @@
       border-radius: var(--border-radius);
       cursor: pointer;
       position: relative;
+      transition: background 0.15s ease;
     }
+
+    .lang-box:hover { background: #eef2f6; }
 
     .lang-label {
       font-size: 14px;
-      font-weight: 500;
+      font-weight: 400;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -118,6 +143,10 @@
       cursor: pointer;
       display: flex;
       align-items: center;
+      transition: color 0.15s ease;
+    }
+    .swap-icon:hover {
+      color: #0395FF;
     }
 
     /* Input Area */
@@ -127,7 +156,17 @@
       padding: 12px;
       margin-bottom: 12px;
       position: relative;
+      transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+      border: 1px solid transparent;
     }
+    .input-container:hover { background: #eef2f6; }
+    .input-container:focus-within {
+      border-color: var(--primary-blue);
+      box-shadow: 0 0 0 1px rgba(3,149,255,0.15);
+      background: #ffffff;
+    }
+
+    /* (Revert to native select; remove custom dropdown styles) */
 
     .input-header {
       display: flex;
@@ -305,6 +344,49 @@
       color: var(--text-dark);
     }
 
+    .history-card {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 12px;
+      border: 1px solid #E9EAEB;
+      transition: background-color .15s ease, color .15s ease;
+    }
+    .history-card:hover {
+      background: #f4f6f8;
+    }
+    .history-src {
+      color: #60656B;
+      font-size: 14px;
+      line-height: normal;
+      font-weight: 400;
+      white-space: pre-wrap;
+      word-break: break-word;
+      transition: color .15s ease;
+    }
+    .history-out {
+      color: #919499;
+      font-size: 14px;
+      line-height: normal;
+      font-weight: 400;
+      white-space: pre-wrap;
+      word-break: break-word;
+      transition: color .15s ease;
+    }
+    .history-card:hover .history-src,
+    .history-card:hover .history-out {
+      color: var(--text-dark);
+    }
+    .history-divider {
+      border-top: 1px dashed #E9EAEB;
+      margin: 4px 0;
+    }
+    .history-timestamp {
+      margin-bottom: 4px;
+      font-size: 11px;
+      color: #9CA3AF;
+      text-align: left;
+    }
+
     .clear-btn {
       background: var(--bg-light);
       color: #6b7280;
@@ -337,15 +419,46 @@
     #clearHistory { color: #6b7280; }
     #clearHistory:hover { color: #0395FF; }
     select {
-      appearance: none;
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+      width: 0;
+      height: 0;
+    }
+    /* Custom dropdown (portal) */
+    .jt-dd-mask {
+      position: fixed;
+      inset: 0;
       background: transparent;
-      border: none;
-      font-size: inherit;
-      font-family: inherit;
-      color: inherit;
+      z-index: 9998;
+    }
+    .jt-dd {
+      position: fixed;
+      z-index: 9999;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(16,24,40,.12);
+      border: 1px solid #E9EAEB;
+      padding: 8px;
+      opacity: 0;
+      transform: translateY(-6px) scale(0.98);
+      transform-origin: top center;
+      transition: opacity .16s ease, transform .16s ease;
+    }
+    .jt-dd.show { opacity: 1; transform: translateY(0) scale(1); }
+    .jt-dd-item {
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      color: #6b7280;
+      line-height: 1;
       cursor: pointer;
-      outline: none;
-      width: 100%;
+      user-select: none;
+    }
+    .jt-dd-item:hover { background: #f4f6f8; }
+    .jt-dd-item.active {
+      background: #edf6ff;
+      color: var(--primary-blue);
     }
     
     .hidden { display: none; }
@@ -363,23 +476,48 @@
       <div class="engine-tag" data-engine="ai">AI 智能引擎</div>
     </div>
   </div>
-  <div style="display:flex;align-items:center;justify-content:space-between;margin:8px 0 12px 0;">
-    <div style="font-size:13px;color:#6b7280;">网页双语对照</div>
-    <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
-      <input id="dualToggle" type="checkbox" style="width:16px;height:16px;">
-      <span id="dualToggleLabel" style="font-size:12px;color:#6b7280;">关闭</span>
-    </label>
+  <style>
+    .switch { position: relative; display: inline-block; width: 40px; height: 22px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: #e5e7eb; transition: .2s; border-radius: 999px; }
+    .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 2px; top: 2px; background-color: white; transition: .2s; border-radius: 50%; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+    input:checked + .slider { background: var(--primary-blue); }
+    input:checked + .slider:before { transform: translateX(18px); }
+    .row-flex { display:flex; align-items:center; justify-content:space-between; margin:8px 0 8px 0; }
+    .text-link { color:#6b7280; font-size:12px; cursor:pointer; }
+    .text-link:hover { color:#0395FF; }
+    .radio-row { display:flex; gap:12px; align-items:center; margin:6px 0 12px 0; }
+    .settings-panel { display:none; border:1px solid #E9EAEB; border-radius: 10px; padding: 8px 10px; background:#fff; }
+    .settings-item { display:flex; align-items:center; justify-content:space-between; padding:6px 0; font-size:12px; color:#6b7280; }
+  </style>
+  <div style="border-top:1px solid #E9EAEB; margin: 0 0 16px 0;"></div>
+  <div class="row-flex">
+    <div style="font-size:14px;color:#202224;display:flex;align-items:center;gap:8px;">
+      <span>网页对照翻译</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span style="font-size:14px;color:#202224;">开启翻译</span>
+      <label class="switch">
+        <input id="dualToggle" type="checkbox">
+        <span class="slider"></span>
+      </label>
+    </div>
   </div>
+  <div id="modeSegment" style="display:flex;background:#f3f4f6;border-radius:12px;padding:4px;gap:4px;width:100%;">
+    <div id="segBilingual" class="seg">双语对照</div>
+    <div id="segTranslated" class="seg">仅查看译文</div>
+  </div>
+  <div style="border-top:1px dashed #E9EAEB;margin:16px 0 16px 0;"></div>
 
   <!-- Lang Selector -->
   <div class="lang-row">
-    <div class="lang-box">
+    <div class="lang-box" id="fromBox">
       <div class="lang-label">
         <select id="fromLang">
           <option value="zh">中文（简体）</option>
           <option value="en">英文</option>
         </select>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        <span id="fromLabel">中文（简体）</span>
       </div>
       <div class="lang-sub">翻译语言</div>
     </div>
@@ -388,18 +526,19 @@
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg>
     </div>
 
-    <div class="lang-box">
+    <div class="lang-box" id="toBox">
       <div class="lang-label">
         <select id="toLang">
           <option value="zh">中文（简体）</option>
           <option value="en">英文</option>
         </select>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        <span id="toLabel">中文（简体）</span>
       </div>
       <div class="lang-sub">目标语言</div>
     </div>
   </div>
 
+  <div class="section-title" style="display:flex;align-items:center;gap:8px;font-size:14px;color:#202224;margin:0 0 8px 0;"><span>文本翻译</span></div>
   <!-- Input Area -->
   <div class="input-container">
     <div class="input-placeholder-layer" id="placeholderLayer" style="position: absolute; top: 12px; left: 12px; color: var(--text-gray); font-size: 16px; line-height: 1.4; pointer-events: none; display: flex; align-items: center; gap: 4px;">

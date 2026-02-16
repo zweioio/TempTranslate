@@ -39,20 +39,35 @@ chrome.storage.sync.get(['engine'], (result) => {
   updateEngineUI();
 });
 
-// 双语对照开关
+// 开关：网页对照翻译（滑动开关）
 const dualToggle = document.getElementById('dualToggle');
-const dualLabel = document.getElementById('dualToggleLabel');
-chrome.storage.sync.get(['dualEnabled'], (r) => {
-  const on = !!r.dualEnabled;
-  if (dualToggle) dualToggle.checked = on;
-  if (dualLabel) dualLabel.textContent = on ? '开启' : '关闭';
+chrome.storage.sync.get(['dualEnabled','dualMode'], (r) => {
+  if (dualToggle) dualToggle.checked = !!r.dualEnabled;
+  const mode = r.dualMode || 'bilingual';
+  setSegMode(mode);
 });
 dualToggle && dualToggle.addEventListener('change', (e) => {
-  const on = e.target.checked;
-  chrome.storage.sync.set({ dualEnabled: on }, () => {
-    if (dualLabel) dualLabel.textContent = on ? '开启' : '关闭';
-  });
+  chrome.storage.sync.set({ dualEnabled: !!e.target.checked });
 });
+
+// 模式切换（分段控件）
+function setSegMode(mode){
+  const bi = document.getElementById('segBilingual');
+  const tr = document.getElementById('segTranslated');
+  if (!bi || !tr) return;
+  bi.classList.toggle('active', mode === 'bilingual');
+  tr.classList.toggle('active', mode === 'translated');
+}
+document.getElementById('segBilingual')?.addEventListener('click', ()=>{
+  setSegMode('bilingual');
+  chrome.storage.sync.set({ dualMode: 'bilingual' });
+});
+document.getElementById('segTranslated')?.addEventListener('click', ()=>{
+  setSegMode('translated');
+  chrome.storage.sync.set({ dualMode: 'translated' });
+});
+
+// 删除自动翻译相关逻辑（入口已移除）
 
 function updateEngineUI() {
   engineTags.forEach(tag => {
@@ -81,6 +96,8 @@ els.engineSelector.addEventListener('click', (e) => {
 function init() {
   loadSettings();
   attachEvents();
+  setupLangDropdowns();
+  syncLangLabels();
 }
 
 // 加载设置
@@ -94,6 +111,7 @@ async function loadSettings() {
     els.toLang.value = settings.toLang;
     state.toLang = settings.toLang;
   }
+  syncLangLabels();
 }
 
 // 绑定事件
@@ -101,20 +119,24 @@ function attachEvents() {
   // 语言切换
   els.fromLang.addEventListener('change', (e) => {
     state.fromLang = e.target.value;
+    syncLangLabels();
     // 互斥逻辑：如果源语言和目标语言相同，则目标语言切换到另一种
     if (state.fromLang === state.toLang) {
       state.toLang = state.fromLang === 'zh' ? 'en' : 'zh';
       els.toLang.value = state.toLang;
+      syncLangLabels();
     }
     chrome.storage.local.set({ fromLang: state.fromLang, toLang: state.toLang });
   });
   
   els.toLang.addEventListener('change', (e) => {
     state.toLang = e.target.value;
+    syncLangLabels();
     // 互斥逻辑：如果目标语言和源语言相同，则源语言切换到另一种
     if (state.toLang === state.fromLang) {
       state.fromLang = state.toLang === 'zh' ? 'en' : 'zh';
       els.fromLang.value = state.fromLang;
+      syncLangLabels();
     }
     chrome.storage.local.set({ fromLang: state.fromLang, toLang: state.toLang });
   });
@@ -129,6 +151,7 @@ function attachEvents() {
     
     state.fromLang = newFrom;
     state.toLang = newTo;
+    syncLangLabels();
     
     chrome.storage.local.set({ fromLang: state.fromLang, toLang: state.toLang });
   });
@@ -290,40 +313,41 @@ async function getHistory() {
 
 async function addHistory(item) {
   const list = await getHistory();
-  list.unshift(item);
+  const withTime = item && item.t ? item : { ...item, t: Date.now() };
+  list.unshift(withTime);
   const trimmed = list.slice(0, 20);
   return new Promise((resolve) => {
     chrome.storage.local.set({ history: trimmed }, () => resolve());
   });
 }
 
+function formatHistoryTime(ts) {
+  if (!ts) return '';
+  const d = new Date(ts);
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  const hh = String(d.getHours()).padStart(2, '0');
+  const mi = String(d.getMinutes()).padStart(2, '0');
+  return `${mm}-${dd} ${hh}:${mi}`;
+}
+
 function renderHistoryItem(item) {
   const wrap = document.createElement('div');
-  wrap.style.display = 'flex';
-  wrap.style.flexDirection = 'column';
-  wrap.style.gap = '4px';
-  wrap.style.background = '#ffffff';
-  wrap.style.borderRadius = '12px';
-  wrap.style.padding = '12px';
-  wrap.style.border = '1px solid #E9EAEB';
+  wrap.className = 'history-card';
+  const timeText = formatHistoryTime(item.t);
+  if (timeText) {
+    const time = document.createElement('div');
+    time.className = 'history-timestamp';
+    time.innerText = timeText;
+    wrap.appendChild(time);
+  }
   const src = document.createElement('div');
-  src.style.color = '#60656B';
-  src.style.fontSize = '14px';
-  src.style.lineHeight = 'normal';
-  src.style.fontWeight = '400';
-  src.style.whiteSpace = 'pre-wrap';
-  src.style.wordBreak = 'break-word';
+  src.className = 'history-src';
   src.innerText = item.src;
   const divider = document.createElement('div');
-  divider.style.borderTop = '1px dashed #E9EAEB';
-  divider.style.margin = '4px 0';
+  divider.className = 'history-divider';
   const out = document.createElement('div');
-  out.style.color = '#919499';
-  out.style.fontSize = '14px';
-  out.style.lineHeight = 'normal';
-  out.style.fontWeight = '400';
-  out.style.whiteSpace = 'pre-wrap';
-  out.style.wordBreak = 'break-word';
+  out.className = 'history-out';
   out.innerText = item.out;
   wrap.appendChild(src);
   wrap.appendChild(divider);
@@ -429,55 +453,106 @@ async function performTranslation() {
 
 // 统一翻译接口
 async function fetchTranslate(text, from, to) {
-  if (state.currentEngine === 'ai') {
-    return await fetchAITranslate(text, from, to);
-  }
-  return await fetchGoogleTranslate(text, from, to);
-}
-
-// 谷歌翻译接口
-async function fetchGoogleTranslate(text, from, to) {
   try {
-    const sl = from === 'zh' ? 'zh-CN' : from;
-    const tl = to === 'zh' ? 'zh-CN' : to;
+    const res = await chrome.runtime.sendMessage({
+      type: 'jt_translate_text',
+      engine: state.currentEngine, // 'google' or 'ai'
+      from,
+      to,
+      text
+    });
     
-    const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sl}&tl=${tl}&dt=t&q=${encodeURIComponent(text)}`;
-    
-    const res = await fetch(url);
-    if (!res.ok) throw new Error('API 响应异常');
-    
-    const data = await res.json();
-    
-    if (data && data[0] && data[0][0]) {
-      return data[0].map(item => item[0]).join('');
+    if (res && res.text) {
+      return res.text;
     }
-    
-    throw new Error('未找到翻译结果');
+    if (res && res.error) {
+      throw new Error(res.error);
+    }
+    throw new Error('未返回翻译结果');
   } catch (err) {
-    console.error('Google Translate Error:', err);
+    console.error('Translation Error:', err);
     throw err;
-  }
-}
-
-// 免费 AI 翻译接口 (MyMemory 提供的智能翻译作为 AI 替代)
-async function fetchAITranslate(text, from, to) {
-  const fromLang = from === 'zh' ? 'zh-CN' : from;
-  const toLang = to === 'zh' ? 'zh-CN' : to;
-  const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${fromLang}|${toLang}`;
-  
-  try {
-    const resp = await fetch(url);
-    const data = await resp.json();
-    if (data.responseData && data.responseData.translatedText) {
-      return data.responseData.translatedText;
-    }
-    throw new Error('AI 引擎暂时不可用');
-  } catch (err) {
-    console.error('AI Translate Error:', err);
-    // 如果 AI 失败，降级到谷歌翻译
-    return await fetchGoogleTranslate(text, from, to);
   }
 }
 
 // 启动
 init();
+
+// ===== 自定义门户式下拉（视觉样式） =====
+function syncLangLabels() {
+  const map = { zh: '中文（简体）', en: '英文' };
+  const fromLabel = document.getElementById('fromLabel');
+  const toLabel = document.getElementById('toLabel');
+  if (fromLabel) fromLabel.textContent = map[els.fromLang.value] || '中文（简体）';
+  if (toLabel) toLabel.textContent = map[els.toLang.value] || '中文（简体）';
+}
+
+function setupLangDropdowns() {
+  const fromBox = document.getElementById('fromBox');
+  const toBox = document.getElementById('toBox');
+  fromBox && fromBox.addEventListener('click', (e) => {
+    e.stopPropagation();
+    openPortalDropdown('from', fromBox);
+  });
+  toBox && toBox.addEventListener('click', (e) => {
+    e.stopPropagation();
+    openPortalDropdown('to', toBox);
+  });
+}
+
+function openPortalDropdown(which, anchorEl) {
+  closePortalDropdown();
+  const rect = anchorEl.getBoundingClientRect();
+  const mask = document.createElement('div');
+  mask.className = 'jt-dd-mask';
+  const panel = document.createElement('div');
+  panel.className = 'jt-dd';
+  panel.style.left = `${rect.left}px`;
+  panel.style.top = `${rect.bottom + 8}px`;
+  panel.style.width = `${rect.width}px`;
+  const options = [
+    { value: 'zh', label: '中文（简体）' },
+    { value: 'en', label: '英文' }
+  ];
+  const current = which === 'from' ? els.fromLang.value : els.toLang.value;
+  options.forEach(opt => {
+    const item = document.createElement('div');
+    item.className = 'jt-dd-item' + (opt.value === current ? ' active' : '');
+    item.textContent = opt.label;
+    item.addEventListener('click', (ev) => {
+      ev.stopPropagation();
+      const select = which === 'from' ? els.fromLang : els.toLang;
+      if (select.value !== opt.value) {
+        select.value = opt.value;
+        select.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+      closePortalDropdown();
+    });
+    panel.appendChild(item);
+  });
+  document.body.appendChild(mask);
+  document.body.appendChild(panel);
+  requestAnimationFrame(()=> panel.classList.add('show'));
+  setTimeout(() => {
+    const closer = (ev) => {
+      if (!panel.contains(ev.target)) {
+        closePortalDropdown();
+        document.removeEventListener('click', closer, true);
+      }
+    };
+    document.addEventListener('click', closer, true);
+  }, 0);
+  window.__jt_dd_mask = mask;
+  window.__jt_dd_panel = panel;
+}
+
+function closePortalDropdown() {
+  if (window.__jt_dd_panel) {
+    window.__jt_dd_panel.remove();
+    window.__jt_dd_panel = null;
+  }
+  if (window.__jt_dd_mask) {
+    window.__jt_dd_mask.remove();
+    window.__jt_dd_mask = null;
+  }
+}
