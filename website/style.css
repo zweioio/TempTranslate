@@ -1,6 +1,6 @@
 :root {
-    --primary: #0066FF;
-    --primary-hover: #0052CC;
+    --primary: #0395FF;
+    --primary-hover: #0275D2;
     --bg-page: #FFFFFF;
     --bg-section: #F9FAFB;
     --text-main: #111827;
@@ -61,7 +61,7 @@ body {
 .orb-1 {
     width: 520px;
     height: 520px;
-    background: radial-gradient(circle, rgba(0, 102, 255, 0.4) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(3, 149, 255, 0.4) 0%, transparent 70%);
     top: -150px;
     left: -100px;
 }
@@ -186,7 +186,7 @@ body {
 .btn-primary:hover {
     background: var(--primary-hover);
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 102, 255, 0.2);
+    box-shadow: 0 4px 12px rgba(2, 117, 210, 0.2);
 }
 
 .btn-primary-sm {
@@ -214,7 +214,7 @@ body {
 }
 
 .btn-outline:hover {
-    background: rgba(0, 102, 255, 0.05);
+    background: rgba(2, 117, 210, 0.05);
 }
 
 /* Hero Section */
@@ -226,7 +226,7 @@ body {
 .badge {
     display: inline-block;
     padding: 6px 12px;
-    background: rgba(0, 102, 255, 0.08);
+    background: rgba(3, 149, 255, 0.08);
     color: var(--primary);
     border-radius: 20px;
     font-size: 13px;
@@ -322,7 +322,7 @@ body {
 .icon-box {
     width: 48px;
     height: 48px;
-    background: rgba(0, 102, 255, 0.05);
+    background: rgba(3, 149, 255, 0.05);
     color: var(--primary);
     border-radius: 12px;
     display: flex;
@@ -373,12 +373,12 @@ body {
 .pricing-card.featured {
     border: 2px solid var(--primary);
     position: relative;
-    box-shadow: 0 10px 30px -10px rgba(0, 102, 255, 0.15);
+    box-shadow: 0 10px 30px -10px rgba(3, 149, 255, 0.15);
 }
 
 .pricing-card.featured:hover {
     transform: translateY(-4px);
-    box-shadow: 0 12px 32px -10px rgba(0, 102, 255, 0.25);
+    box-shadow: 0 12px 32px -10px rgba(3, 149, 255, 0.25);
 }
 
 .pricing-card.featured::after {
@@ -452,7 +452,7 @@ body {
 .step-num {
     font-size: 40px;
     font-weight: 800;
-    color: rgba(0, 102, 255, 0.1);
+    color: rgba(3, 149, 255, 0.1);
     margin-bottom: 16px;
 }
 
