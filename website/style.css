@@ -189,6 +189,12 @@ body {
     box-shadow: 0 4px 12px rgba(2, 117, 210, 0.2);
 }
 
+.btn-primary.btn-flat:hover {
+    background: var(--primary-hover);
+    transform: none;
+    box-shadow: none;
+}
+
 .btn-primary-sm {
     padding: 8px 16px;
     font-size: 14px;
@@ -209,6 +215,7 @@ body {
 .btn-secondary:hover {
     background: var(--bg-section);
     border-color: #D1D5DB;
+    color: #0395FF;
 }
 
 .btn-outline {
@@ -323,6 +330,10 @@ body {
     box-shadow: var(--shadow-hover);
 }
 
+.feature-card:hover h3 {
+    color: #0395FF;
+}
+
 .icon-box {
     width: 48px;
     height: 48px;
@@ -403,6 +414,10 @@ body {
     font-size: 20px;
     font-weight: 700;
     margin-bottom: 8px;
+}
+
+.pricing-card:hover .card-header h3 {
+    color: #0395FF;
 }
 
 .price {
