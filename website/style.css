@@ -196,6 +196,12 @@ body {
     color: #FFFFFF !important;
 }
 
+.btn-primary-sm:hover {
+    background: var(--primary-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(2, 117, 210, 0.2);
+}
+
 .btn-secondary {
     background: white;
     color: var(--text-main);
