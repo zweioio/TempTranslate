@@ -17,6 +17,14 @@
   "action": {
     "default_icon": "icons/icon.png"
   },
+  "commands": {
+    "_execute_action": {
+      "suggested_key": {
+        "default": "Alt+Q"
+      },
+      "description": "打开即时翻译侧边栏"
+    }
+  },
   "side_panel": {
     "default_path": "popup.html"
   },
