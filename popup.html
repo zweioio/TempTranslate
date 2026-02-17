@@ -85,13 +85,15 @@
     #modeSegment .seg {
       padding: 0 12px;
       height: 36px;
-      line-height: 36px;
       border-radius: 8px;
       font-size: 14px;
       color: #6b7280;
       cursor: pointer;
       flex: 1;
-      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
       transition: all 0.2s ease;
     }
     #modeSegment .seg.active {
@@ -101,6 +103,12 @@
     }
     #modeSegment .seg:hover:not(.active) {
       color: var(--text-dark) !important;
+    }
+
+    .seg-icon {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
     }
 
     /* Lang Selector */
@@ -504,8 +512,14 @@
     </div>
   </div>
   <div id="modeSegment" style="display:flex;background:#f3f4f6;border-radius:12px;padding:4px;gap:4px;width:100%;">
-    <div id="segBilingual" class="seg">双语对照</div>
-    <div id="segTranslated" class="seg">仅查看译文</div>
+    <div id="segBilingual" class="seg">
+      <img src="icons/mode-bilingual.svg" alt="" class="seg-icon">
+      <span>双语对照</span>
+    </div>
+    <div id="segTranslated" class="seg">
+      <img src="icons/mode-translated.svg" alt="" class="seg-icon">
+      <span>仅查看译文</span>
+    </div>
   </div>
   <div style="border-top:1px dashed #E9EAEB;margin:16px 0 16px 0;"></div>
 
