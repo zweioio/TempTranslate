@@ -148,7 +148,11 @@ body {
 .nav-links {
     display: flex;
     align-items: center;
-    gap: 24px;
+    gap: 12px;
+}
+
+.nav-links a:nth-child(-n+3) {
+    margin-right: 12px;
 }
 
 .nav-links a {
@@ -222,6 +226,12 @@ body {
     background: transparent;
     color: var(--primary);
     border: 1px solid var(--primary);
+}
+
+.nav-links .btn-outline {
+    background: transparent;
+    color: var(--primary) !important;
+    border-color: var(--primary);
 }
 
 .btn-outline:hover {

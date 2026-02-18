@@ -3,3 +3,6 @@ node_modules/
 .vscode/
 .idea/
 *.log
+website/mac/jsfanyi-desktop-*.dmg
+.backup/
+website/mac/jsfanyi-desktop-*.dmg

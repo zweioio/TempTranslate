@@ -1,0 +1,32 @@
+{
+  "name": "jsfanyi-desktop",
+  "version": "1.0.0",
+  "description": "即时翻译 macOS 桌面版（Electron）",
+  "author": "jsfanyi",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder"
+  },
+  "build": {
+    "appId": "com.jsfanyi.desktop",
+    "productName": "即时翻译",
+    "icon": "../icons/logo-mac.png",
+    "mac": {
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "category": "public.app-category.productivity",
+      "icon": "../icons/logo-mac.png"
+    },
+    "files": [
+      "**/*"
+    ],
+    "asar": true
+  },
+  "devDependencies": {
+    "electron": "^40.4.1",
+    "electron-builder": "^24.13.3"
+  }
+}
